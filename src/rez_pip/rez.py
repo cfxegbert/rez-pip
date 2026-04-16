@@ -46,7 +46,7 @@ def createPackage(
     )
 
     rezNames = [
-        rez_pip.utils.pythontDistributionNameToRez(install.dist.name)
+        rez_pip.utils.pythonDistributionNameToRez(install.dist.name)
         for install in packageGroup.installations
     ]
 
