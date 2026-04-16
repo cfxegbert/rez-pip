@@ -24,7 +24,6 @@ import rich.logging
 
 import rez_pip.pip
 import rez_pip.rez
-import rez_pip.data
 import rez_pip.patch
 import rez_pip.utils
 import rez_pip.plugins
@@ -271,17 +270,17 @@ def _run(args: argparse.Namespace, pipArgs: list[str], pipWorkArea: str) -> None
             for group in packageGroups:
                 for package in group.packages:
                     _LOG.info(f"[bold]Installing {package.name!r} {package.path!r}")
-                    targetPath = os.path.join(installedWheelsDir, package.name)
-                    dist = rez_pip.install.installWheel(
+                    installation = rez_pip.install.installWheel(
                         package,
                         package.path,
-                        targetPath,
+                        os.path.join(installedWheelsDir, package.name),
                     )
 
-                    rez_pip.install.cleanup(dist, targetPath)
-                    rez_pip.patch.patch(dist, targetPath)
+                    installation.cleanup()
+                    installation.patch()
+                    installation.finalize()
 
-                    group.dists.append(dist)
+                    group.installations.append(installation)
 
         with rez_pip.utils.CONSOLE.status("[bold]Creating rez packages..."):
             normalizedPackageNames = {
@@ -294,7 +293,6 @@ def _run(args: argparse.Namespace, pipArgs: list[str], pipWorkArea: str) -> None
                 rez_pip.rez.createPackage(
                     group,
                     rez.version.Version(pythonVersion),
-                    installedWheelsDir,
                     normalizedPackageNames,
                     prefix=args.prefix,
                     release=args.release,
@@ -393,7 +391,7 @@ def _printPlugins() -> None:
 def run(
     args: argparse.Namespace | None = None, pipArgs: list[str] | None = None
 ) -> int:
-    pipWorkArea = tempfile.mkdtemp(prefix="rez-pip-target")
+    pipWorkArea = os.path.realpath(tempfile.mkdtemp(prefix="rez-pip-target"))
 
     if args is None:
         args, pipArgs = _parseArgs(sys.argv[1:])
