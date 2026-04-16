@@ -284,9 +284,9 @@ def _run(args: argparse.Namespace, pipArgs: list[str], pipWorkArea: str) -> None
 
         with rez_pip.utils.CONSOLE.status("[bold]Creating rez packages..."):
             normalizedPackageNames = {
-                rez_pip.utils.normalizePythonPackageName(dist.name): dist.name
+                rez_pip.utils.normalizePythonPackageName(install.dist.name): install.dist.name
                 for group in packageGroups
-                for dist in group.dists
+                for install in group.installations
             }
 
             for group in packageGroups:
