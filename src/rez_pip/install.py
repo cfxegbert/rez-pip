@@ -89,7 +89,9 @@ class PackageFile:
         if self.isAbsolutePath():
             try:
                 return PackageFile(
-                    os.path.relpath(self.file, prefix), self.hash, self.size
+                    pathlib.PurePath(os.path.relpath(self.file, prefix)).as_posix(),
+                    self.hash,
+                    self.size,
                 )
             except ValueError:
                 return self
