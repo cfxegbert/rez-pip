@@ -283,7 +283,7 @@ class Installation:
 
         distInfoPath = os.path.join(root, f"{packageName}-{package.version}.dist-info")
         if os.path.isdir(distInfoPath):
-            return
+            return distInfoPath
 
         packageVersion = packaging.utils.canonicalize_version(package.version)
         distInfoPath = os.path.join(root, f"{packageName}-{packageVersion}.dist-info")
